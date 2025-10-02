@@ -19,7 +19,6 @@ from collections import OrderedDict
 import datetime
 
 logger = set_logger(get_module_name(__file__))
-PLOT_COLORS = [dict(color=color) for color in utils.plot_colors]
 
 
 class DataDisplayer(QObject):
@@ -30,7 +29,8 @@ class DataDisplayer(QObject):
     updated_item = Signal(list)
     labels_changed = Signal(list)
 
-    def __init__(self, plotitem: pyqtgraph.PlotItem, plot_colors=PLOT_COLORS):
+    def __init__(self, plotitem: pyqtgraph.PlotItem,
+                 plot_colors=utils.plot_colors):
         super().__init__()
         self._plotitem = plotitem
         self.colors = plot_colors
@@ -106,14 +106,16 @@ class DataDisplayer(QObject):
             self._plotitem.removeItem(self._min_lines.pop(0))
         if data is not None:
             for ind in range(len(data)):
-                self._plot_items.append(pyqtgraph.PlotDataItem(pen=self.colors[ind]))
+                pen_dict = {'color': self.colors[ind]}
+                color = self.colors[ind]
+                self._plot_items.append(pyqtgraph.PlotDataItem(pen=pen_dict))
                 self._plotitem.addItem(self._plot_items[-1])
                 self.legend.addItem(self._plot_items[-1], data.labels[ind])
                 max_line = pyqtgraph.InfiniteLine(angle=0,
-                                                  pen=pyqtgraph.mkPen(color=self.colors[ind]['color'],
+                                                  pen=pyqtgraph.mkPen(color=color,
                                                                       style=Qt.DashLine))
                 min_line = pyqtgraph.InfiniteLine(angle=0,
-                                                  pen=pyqtgraph.mkPen(color=self.colors[ind]['color'],
+                                                  pen=pyqtgraph.mkPen(color=color,
                                                                       style=Qt.DashLine))
                 self._max_lines.append(max_line)
                 self._min_lines.append(min_line)
@@ -223,7 +225,7 @@ class View0D(ActionManager, QObject):
             state = self.is_action_checked('show_data_as_list')
         self.values_list.setVisible(state)
 
-    def add_data_displayer(self, displayer_name: str, plot_colors=PLOT_COLORS):
+    def add_data_displayer(self, displayer_name: str, plot_colors=utils.plot_colors):
         self.other_data_displayers[displayer_name] = DataDisplayer(self.plotitem, plot_colors)
         self.connect_action('clear', self.other_data_displayers[displayer_name].clear_data)
 
