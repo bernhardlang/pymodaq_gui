@@ -6,6 +6,7 @@ from qtpy import QtCore, QtWidgets
 from pyqtgraph.dockarea import DockArea
 
 from pymodaq_gui.utils.dock import DockArea, Dock
+from pymodaq_gui.utils.main_window import MainWindow
 from pymodaq_gui.managers.action_manager import ActionManager
 from pymodaq_gui.managers.parameter_manager import ParameterManager
 
@@ -50,10 +51,10 @@ class CustomApp(QObject, ActionManager, ParameterManager):
         self.parent = parent
         if isinstance(parent, DockArea):
             self.dockarea: DockArea = parent
-            self.mainwindow: QtWidgets.QMainWindow = parent.parent()
+            self.mainwindow: MainWindow = parent.parent()
         else:
             self.dockarea: DockArea = None
-            self.mainwindow: QtWidgets.QMainWindow = None
+            self.mainwindow: MainWindow = None
 
         self.docks: Dict[str, Dock] = dict([])
         self.statusbar = None
